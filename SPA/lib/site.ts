@@ -1,16 +1,16 @@
 export const siteConfig = {
-  name: "Service Management Platform",
+  name: "Plataforma de Gerenciamento de Serviços",
   tagline:
-    "Centralize service requests, track tickets, and manage your service catalog in one place.",
+    "Centralize os serviços dos seus clientes com pagamentos pendentes",
   description:
-    "A unified platform to request services, manage support tickets, and keep your team aligned.",
+    "A plataforma unificada para registrar pagamentos pendentes para serviços de gráficas",
 } as const;
 
 export const features = [
   {
-    title: "Service Catalog",
+    title: "",
     description:
-      "Browse available services and submit requests through a single, organized catalog.",
+      "Gerencie os valores das dívidas",
   },
   {
     title: "Ticket Management",
@@ -38,7 +38,7 @@ export const cta = {
 
 export const dashboard = {
   title: "Dashboard",
-  subtitle: "View your active services and track spending at a glance.",
+  subtitle: "Veja seus serviços ativos e monitore pagamentos pendentes",
   seeMoreLabel: "See more",
   profileAlt: "Profile picture",
 } as const;

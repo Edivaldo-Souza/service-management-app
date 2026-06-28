@@ -1,0 +1,19 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: servicemanagement
+  datasource:
+    url: jdbc:postgresql://${PGHOST}/${PGDATABASE}
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+api:
+  security:
+    token:
+      secret: ${APIKEY}
