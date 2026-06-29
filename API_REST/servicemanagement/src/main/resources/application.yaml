@@ -8,10 +8,14 @@ spring:
     username: ${PGUSER}
     password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+
+logging:
+  level:
+    org.flywaydb: DEBUG
 
 api:
   security:
