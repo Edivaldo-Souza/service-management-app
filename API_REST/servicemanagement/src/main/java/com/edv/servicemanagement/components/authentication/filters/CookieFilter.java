@@ -31,14 +31,14 @@ public class CookieFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        Optional<String> jwt = extractJwtFromCookie(request);
+        Optional<String> jwt = tokenService.extractJwtFromCookie(request);
 
         jwt.ifPresent(token ->{
             if(tokenService.validateToken(token)){
 
                 DecodedJWT decodedJWT = tokenService.decodeToken(token);
 
-                String userEmail = decodedJWT.getSignature();
+                String userEmail = decodedJWT.getSubject();
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
@@ -56,21 +56,6 @@ public class CookieFilter extends OncePerRequestFilter {
         });
 
         filterChain.doFilter(request,response);
-
-    }
-
-    private Optional<String> extractJwtFromCookie(HttpServletRequest request){
-
-        if(request.getCookies()==null){
-
-            return Optional.empty();
-
-        }
-
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> "accessToken".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst();
 
     }
 }

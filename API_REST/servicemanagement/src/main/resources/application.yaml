@@ -9,13 +9,9 @@ spring:
     password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
-
-logging:
-  level:
-    org.flywaydb: DEBUG
 
 api:
   security:

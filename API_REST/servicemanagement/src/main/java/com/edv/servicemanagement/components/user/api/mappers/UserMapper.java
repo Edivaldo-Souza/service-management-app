@@ -1,6 +1,7 @@
 package com.edv.servicemanagement.components.user.api.mappers;
 
 import com.edv.servicemanagement.components.user.api.dtos.CreateUserDto;
+import com.edv.servicemanagement.components.user.api.dtos.UpdateUserDto;
 import com.edv.servicemanagement.components.user.api.dtos.UserDto;
 import com.edv.servicemanagement.components.user.domain.entities.User;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,17 @@ public class UserMapper {
         user.setName(createUserDto.getName());
         user.setEmail(createUserDto.getEmail());
         user.setPassword(createUserDto.getPassword());
+
+        return user;
+    }
+
+    public User updateUserDtoToUser(UpdateUserDto updateUserDto){
+        User user = new User();
+
+        user.setId(updateUserDto.getId());
+        user.setName(updateUserDto.getName());
+        user.setEmail(updateUserDto.getEmail());
+        user.setPassword(updateUserDto.getPassword());
 
         return user;
     }

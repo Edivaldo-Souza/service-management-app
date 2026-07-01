@@ -6,6 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,9 +63,24 @@ public class TokenService {
     }
 
     public DecodedJWT decodeToken(String token){
-        Algorithm algorithm = Algorithm.HMAC512(secret);
+        Algorithm algorithm = Algorithm.HMAC512(secret.getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         return verifier.verify(token);
+    }
+
+    public Optional<String> extractJwtFromCookie(HttpServletRequest request){
+
+        if(request.getCookies()==null){
+
+            return Optional.empty();
+
+        }
+
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> "accessToken".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst();
+
     }
 
     public Authentication getAuthentication(String token){

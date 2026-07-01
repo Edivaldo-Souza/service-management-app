@@ -21,18 +21,14 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
 
-    public String signIn(LoginDto loginDto){
-        try{
+    public String signIn(LoginDto loginDto) throws AuthenticationException{
 
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(),loginDto.getPassword()));
+        var userEmail = loginDto.getEmail();
 
-            return loginDto.getEmail();
+        var password = loginDto.getPassword();
 
-        }
-        catch (AuthenticationException exception){
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userEmail,password));
 
-            throw new RuntimeException("Invalid credentials",exception);
-
-        }
+        return tokenService.generateToken(loginDto.getEmail());
     }
 }
