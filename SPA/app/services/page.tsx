@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { ProfileCard } from "@/components/services/profile-card";
 import { ServiceList } from "@/components/services/service-list";
 import { dashboard, siteConfig } from "@/lib/site";
-import CustomersList from "@/components/services/customers-list";
+import CustomersList from "@/components/customer/customers-list";
 
 export const metadata: Metadata = {
   title: `${dashboard.title} | ${siteConfig.name}`,

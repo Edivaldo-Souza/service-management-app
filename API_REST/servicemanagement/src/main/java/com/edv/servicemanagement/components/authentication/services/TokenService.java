@@ -28,13 +28,11 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
-    private final Long EXPIRATION_TIME = 43200000L;
-
     private final UserDetailsService userDetailsService;
 
     public String generateToken(String email){
         try{
-            Algorithm algorithm = Algorithm.HMAC512(secret);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
 
             String uri = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
 
@@ -42,8 +40,7 @@ public class TokenService {
                     .withSubject(email)
                     .withExpiresAt(generateValidity())
                     .withIssuer(uri)
-                    .sign(algorithm)
-                    .strip();
+                    .sign(algorithm);
 
             return token;
         }
@@ -63,7 +60,7 @@ public class TokenService {
     }
 
     public DecodedJWT decodeToken(String token){
-        Algorithm algorithm = Algorithm.HMAC512(secret.getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         return verifier.verify(token);
     }
@@ -91,6 +88,9 @@ public class TokenService {
 
     public Date generateValidity(){
         Date date = new Date();
-        return new Date(date.getTime()+EXPIRATION_TIME);
+        System.out.println(date.getDate());
+        Date expiresDate = new Date(date.getTime()+(7 * 24 * 60 * 60 * 1000));
+        System.out.println(expiresDate.getDate()+"/"+expiresDate.getMonth()+"/"+expiresDate.getYear());
+        return expiresDate;
     }
 }

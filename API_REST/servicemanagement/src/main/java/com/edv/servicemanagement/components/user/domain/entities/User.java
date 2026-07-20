@@ -1,5 +1,6 @@
 package com.edv.servicemanagement.components.user.domain.entities;
 
+import com.edv.servicemanagement.components.customer.domain.entities.Customer;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

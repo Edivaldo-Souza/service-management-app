@@ -50,3 +50,9 @@ export const signup = {
   signInPrompt: "Already have an account?",
   signInLabel: "Sign in",
 } as const;
+
+export const signin = {
+  title: "Sign In",
+  description: "Welcome back!",
+  submitLabel: "Login"
+}

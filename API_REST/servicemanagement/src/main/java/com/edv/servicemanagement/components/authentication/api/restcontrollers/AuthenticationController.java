@@ -25,18 +25,17 @@ public class AuthenticationController {
 
         String token = authenticationService.signIn(dto);
 
+        int maxAge = 7 * 24 * 60 * 60;
+
         ResponseCookie responseCookie = ResponseCookie.from("accessToken",token)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(ResponseConstants.TOKEN_MAX_AGE.ordinal())
+                .maxAge(maxAge)
                 .build();
 
-        return ResponseEntity.noContent().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
 
     }
-
-
-
 
 }

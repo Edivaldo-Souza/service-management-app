@@ -3,8 +3,10 @@ package com.edv.servicemanagement.components.user.domain.services;
 import com.edv.servicemanagement.components.user.domain.entities.User;
 
 public interface UserService {
-    public User getById(Long id);
-    public User create(User user);
-    public User update(User user);
-    public boolean delete (Long id);
+     User getById(Long id);
+     User getByToken(String token);
+     User getByEmail(String email);
+     User create(User user);
+     User update(User user);
+     boolean delete (Long id);
 }

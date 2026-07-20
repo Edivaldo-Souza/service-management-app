@@ -1,8 +1,10 @@
 package com.edv.servicemanagement.components.user.domain.services;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.edv.servicemanagement.commons.ValidationField;
 import com.edv.servicemanagement.commons.exceptions.ResourceNotFoundException;
 import com.edv.servicemanagement.commons.exceptions.UniqueFieldValueAlreadyExistsException;
+import com.edv.servicemanagement.components.authentication.services.TokenService;
 import com.edv.servicemanagement.components.user.domain.entities.User;
 import com.edv.servicemanagement.components.user.domain.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final TokenService tokenService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -31,6 +34,28 @@ public class UserServiceImpl implements UserService{
         if(userOptional.isEmpty()){
 
             throw new ResourceNotFoundException("Unable to find user with id = " + id);
+
+        }
+
+        return userOptional.get();
+
+    }
+
+    @Override
+    public User getByToken(String token){
+
+        DecodedJWT decodedJWT = tokenService.decodeToken(token);
+
+        return getByEmail(decodedJWT.getSubject());
+    }
+
+    public User getByEmail(String email) {
+
+        Optional<User> userOptional = userRepository.getByEmail(email);
+
+        if(userOptional.isEmpty()){
+
+            throw new ResourceNotFoundException("Unable to find user with email = " + email);
 
         }
 
