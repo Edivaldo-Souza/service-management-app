@@ -1,0 +1,1 @@
+ALTER TABLE tb_demand_group ADD COLUMN value DOUBLE PRECISION;

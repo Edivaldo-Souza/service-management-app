@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>Nota de serviço</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; color: #333; }
+        h1 { color: #0056b3; text-align: center; }
+        .footer { margin-top: 50px; font-size: 12px; text-align: center; color: #777; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1 th:text="${title}">Título Padrão</h1>
+
+    <p>Olá, <strong th:text="${customer}">Usuário</strong>! Este documento foi gerado a partir de um template HTML.</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Descrição</th>
+            <th>Quantidade</th>
+            <th>Largura</th>
+            <th>Altura</th>
+            <th>Valor</th>
+            <th>Data de criação</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="demand : ${demands}">
+            <td th:text="${demand.description}">Nome do Item</td>
+            <td th:text="${demand.amount}">Quantidade</td>
+            <td th:text="${demand.productLength}">Largura(m)</td>
+            <td th:text="${demand.productHeight}">Altura(m)</td>
+            <td th:text="${demand.value}">R$ 0,00</td>
+            <td th:text="${demand.created}">Data de criação</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Gerado automaticamente pelo Spring Boot em <span th:text="${dataGeracao}">Data</span>.
+    </div>
+</body>
+</html>

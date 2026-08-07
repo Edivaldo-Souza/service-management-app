@@ -45,6 +45,7 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
           toast.success("Cliente adicionado!")
         }
         setCustomerFormData({name:"",phone:""})
+        onClose()
       } catch(error){
         if(axios.isAxiosError(error)){
           toast.error(`${error.response?.data.error}`)
@@ -110,6 +111,7 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
             <button
               type="button"
               onClick={onClose}
+              disabled={loading}
               className="flex-1 rounded-xl border border-gray-300 bg-white px-6 py-3.5 font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all"
             >
               Cancelar

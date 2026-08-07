@@ -10,12 +10,6 @@ export const metadata: Metadata = {
   title: `${dashboard.title} | ${siteConfig.name}`,
 };
 
-const services = [
-  { id: 1, costumer: "Lucas", price: 200.0 },
-  { id: 2, costumer: "Pedro", price: 100.0 },
-  { id: 3, costumer: "Simone", price: 340.0 },
-];
-
 export default function Dashboard() {
 
   return (
@@ -25,7 +19,7 @@ export default function Dashboard() {
           <div className="w-3/10">
             <CustomersList /> 
           </div> 
-          <ServiceList services={services} /> 
+          <ServiceList/> 
       </main>
       <SiteFooter />
     </>

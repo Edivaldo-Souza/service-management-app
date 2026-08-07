@@ -1,8 +1,13 @@
 "use client"
 
-import { ProductType } from "@/types/selectables";
+import { SingleSelectedOption } from "@/types/selectables";
 import React, { useState } from "react";
 import CustomerDto from "@/types/customer-dto";
+import SingleSelectInput from "../forms/singIe-select-input";
+import { SingleValue } from "react-select";
+import api from "@/lib/api";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 interface AddServiceModalProps {
   isOpen: boolean;
@@ -11,23 +16,28 @@ interface AddServiceModalProps {
 }
 
 interface ServiceData{
+  demandGroupId:number,
+  customerId?: number
+  productTypeId?: number
   description:string,
   amount: number
   productLength: number
   productHeight: number
-  productType?: ProductType
-  totalValue: number
+  value: number
 }
 
 export default function AddServiceModal({isOpen,onClose, customer}:AddServiceModalProps){
   const [serviceData,setServiceData] = useState<ServiceData>({
+    demandGroupId:0,
+    customerId:0,
+    productTypeId: 0,
     description:"",
     amount: 0,
     productLength: 0,
     productHeight: 0,
-    productType: undefined,
-    totalValue: 0
+    value: 0
   })
+  const [productType,setProductType] = useState<SingleSelectedOption | null>(null);
   const [loading,setLoading] = useState<boolean>(false); 
 
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -38,23 +48,64 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
     }))
   }
 
-  const totalValue = (Number(serviceData.amount) || 0) * (Number(serviceData.productLength) || 0) * (Number(serviceData.productHeight) || 0)
+  const totalValue = productType ?
+    (serviceData.amount || 0) * 
+    (serviceData.productLength || 0) * 
+    (serviceData.productHeight || 0) *
+    (Number(productType.label.match(/[\d.]+/))) || 0 : 0
 
   const clearServiceData = () =>{
     setServiceData({
+      demandGroupId:0,
+      customerId:0,
+      productTypeId: 0,
       description:"",
       amount: 0,
       productLength: 0,
       productHeight: 0,
-      productType: undefined,
-      totalValue: 0
+      value: 0
     })
+  }
+
+  const handleProductTypeChange = (newProductType: SingleValue<SingleSelectedOption>) => {
+    setProductType(newProductType)
+  }
+
+  const validateForm = () => {
+    return true;
   }
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) =>{
     e.preventDefault()
     setLoading(true)
 
+    const postPayload = {
+          ...serviceData, 
+          ["value"]:totalValue,
+          ["productTypeId"]:productType?.value,
+          ["customerId"]:customer?.id
+    }
+    
+    if(validateForm()){
+      try{
+        const response = await api.post("v1/demand",postPayload)
+        if(response.status === 201){
+          toast.success("Serviço adicionado")
+        }
+
+        clearServiceData();
+        onClose();
+      }
+      catch(error){
+        if(axios.isAxiosError(error)){
+          toast.error(`${error.response?.data.error}`)
+        }
+        console.log(error)
+      }
+      finally{
+        setLoading(false)
+      }
+    }
     
   }
 
@@ -113,19 +164,15 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="text-gray-800 space-y-2">
             <label className="text-sm font-semibold text-gray-700 block" htmlFor="productType">
               Tipo do material
             </label>
-            <input
-              id="productType"
-              name="productType"
-              type="select"
-              required
-              onChange={handleChange}
-              placeholder="Selecione um tipo de material"
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-gray-700 placeholder:text-gray-400"
-            />
+            <SingleSelectInput 
+              value={productType}
+              onChange={handleProductTypeChange}
+              url="v1/product-type?isOutsourced=true"
+              typeMetaData="Tipo de material" />
           </div>
 
           <div className="space-y-2">
@@ -136,7 +183,7 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
               id="productLength"
               name="productLength"
               type="number"
-              required
+              step="any"
               onChange={handleChange}
               placeholder="0.0m"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-gray-700 placeholder:text-gray-400"
@@ -151,7 +198,7 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
               id="productHeight"
               name="productHeight"
               type="number"
-              required
+              step="any"
               onChange={handleChange}
               placeholder="0.0m"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-gray-700 placeholder:text-gray-400"
@@ -176,6 +223,7 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
             </button>
             <button
               type="submit"
+              disabled={loading}
               className="flex-1 rounded-xl bg-emerald-600 px-6 py-3.5 font-bold text-white hover:bg-emerald-700 shadow-md hover:shadow-lg transition-all"
             >
               {loading ? "Carregando..." : "Salvar"}

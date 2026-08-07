@@ -1,4 +1,4 @@
-export interface ProductType{
-    name:string,
+export interface SingleSelectedOption{
+    label:string,
     value:number
 }
