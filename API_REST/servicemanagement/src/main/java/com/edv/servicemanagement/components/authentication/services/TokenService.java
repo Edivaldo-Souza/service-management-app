@@ -88,9 +88,7 @@ public class TokenService {
 
     public Date generateValidity(){
         Date date = new Date();
-        System.out.println(date.getDate());
         Date expiresDate = new Date(date.getTime()+(7 * 24 * 60 * 60 * 1000));
-        System.out.println(expiresDate.getDate()+"/"+expiresDate.getMonth()+"/"+expiresDate.getYear());
         return expiresDate;
     }
 }

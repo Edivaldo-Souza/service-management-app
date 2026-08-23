@@ -4,7 +4,7 @@ import com.edv.servicemanagement.commons.exceptions.ResourceNotFoundException;
 import com.edv.servicemanagement.components.customer.domain.entities.Customer;
 import com.edv.servicemanagement.components.customer.domain.repositories.CustomerRepository;
 import com.edv.servicemanagement.components.user.domain.entities.User;
-import com.edv.servicemanagement.components.user.domain.services.UserServiceImpl;
+import com.edv.servicemanagement.components.user.domain.services.impl.UserServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

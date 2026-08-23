@@ -14,6 +14,8 @@ public class DemandDto {
 
     private ProductTypeDto productTypeDto;
 
+    private BigDecimal meterValue;
+
     private String description;
 
     private Integer amount;

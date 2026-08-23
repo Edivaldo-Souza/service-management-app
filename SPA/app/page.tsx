@@ -10,7 +10,6 @@ export default function Home() {
       <SiteHeader />
       <main className="flex flex-1 flex-col">
         <HeroSection />
-        <FeaturesSection />
         <CtaSection />
       </main>
       <SiteFooter />

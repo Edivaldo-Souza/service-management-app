@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import styles from "./customers-list.module.css";
 import AddCustomerModal from "./add-customer-modal";
 import CustomerDto from "@/types/customer-dto";
@@ -8,12 +8,28 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import api from "@/lib/api";
 import AddServiceModal from "../services/add-service-modal";
+import SearchBar from "@/components/search-bar";
 
-export default function CustomersList(){
+interface CustomersListProps {
+    onServiceCreated?: () => void;
+}
+
+export default function CustomersList({ onServiceCreated }: CustomersListProps){
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isServiceModalOpen, setIsServiceModalOpen] = useState(false)
     const [selectedCustomer, setSelectedCustomer] = useState<CustomerDto | null>(null)
     const [customerDtoList,setCustomerDtoList] = useState<CustomerDto[]>([])
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const filteredCustomers = useMemo(() => {
+        if (!searchQuery.trim()) return customerDtoList;
+        const q = searchQuery.toLowerCase();
+        return customerDtoList.filter((c) => c.name.toLowerCase().includes(q));
+    }, [customerDtoList, searchQuery]);
+
+    const handleSearch = useCallback((query: string) => {
+        setSearchQuery(query);
+    }, []);
 
     const getCustomers = async () =>{
         try{
@@ -34,18 +50,17 @@ export default function CustomersList(){
     },[])
 
     return (
-        <div className={`w-full flex flex-col h-full ${styles.container}`}>
-            <div className="flex justify-center p-3">
-                <input
-                    placeholder="Pesquisar"
-                    className="rounded-xl border px-4 py-2 w-full max-w-xs text-center"
-                />
-            </div>
+        <div className={`w-full flex flex-col h-full ${styles.container} p-2`}>
+
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                Clientes
+            </h2>
+            <SearchBar placeholder="Buscar cliente por nome..." onSearch={handleSearch} />
 
             {/* Scrollable customer list */}
             <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-16">
                 <ul className="w-full p-2">
-                    {customerDtoList.map((customer)=>(
+                    {filteredCustomers.map((customer)=>(
                         <li key={customer.id} className="p-0.5">
                             <div className="rounded-xl border flex w-full items-center gap-2 p-2">
                                 <img alt="Profile picture" className="w-8 h-8 rounded-full"/>
@@ -85,6 +100,7 @@ export default function CustomersList(){
                     setSelectedCustomer(null);
                 }}
                 customer={selectedCustomer}
+                onServiceCreated={onServiceCreated}
             />
         </div>
     )

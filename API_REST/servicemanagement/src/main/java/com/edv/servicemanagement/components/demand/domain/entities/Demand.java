@@ -30,7 +30,15 @@ public class Demand {
 
     private Double productHeight;
 
+    @Transient
+    private BigDecimal unitValue;
+
     private BigDecimal value;
+
+    private BigDecimal meterValue;
+
+    @Transient
+    private String createdString;
 
     private LocalDateTime created;
 

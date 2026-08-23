@@ -17,4 +17,6 @@ public class MinDemandGroupDto {
     private LocalDateTime created;
 
     private BigDecimal value;
+
+    private BigDecimal reducedValue;
 }

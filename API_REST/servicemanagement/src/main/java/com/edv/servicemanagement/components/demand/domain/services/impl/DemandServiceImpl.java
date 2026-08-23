@@ -1,15 +1,20 @@
 package com.edv.servicemanagement.components.demand.domain.services.impl;
 
+import com.edv.servicemanagement.commons.exceptions.ResourceNotFoundException;
 import com.edv.servicemanagement.components.customer.domain.entities.Customer;
 import com.edv.servicemanagement.components.customer.domain.services.CustomerServiceImpl;
 import com.edv.servicemanagement.components.demand.domain.entities.Demand;
 import com.edv.servicemanagement.components.demand.domain.entities.DemandGroup;
+import com.edv.servicemanagement.components.demand.domain.entities.ProductType;
 import com.edv.servicemanagement.components.demand.domain.repositories.DemandRepository;
 import com.edv.servicemanagement.components.demand.domain.services.DemandService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +30,13 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public Demand getById(Long id) {
-        return null;
+        Optional<Demand> demandOptional = demandRepository.findById(id);
+
+        if(demandOptional.isEmpty()){
+            throw new ResourceNotFoundException("Unable to find demand with id: "+id);
+        }
+
+        return demandOptional.get();
     }
 
     @Override
@@ -40,7 +51,6 @@ public class DemandServiceImpl implements DemandService {
             demandGroup.setUpdated(LocalDateTime.now());
 
             demand.setDemandGroup(demandGroup);
-
         }
         else{
 
@@ -66,7 +76,23 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public Demand update(Demand demand) {
-        return null;
+    @Transactional
+    public Demand update(Demand demand, Long productTypeId) {
+
+        Demand demandToUpdate = getById(demand.getId());
+
+        ProductType productType = productTypeService.getById(productTypeId);
+
+        demandToUpdate.setUpdated(LocalDateTime.now());
+        demandToUpdate.setProductType(productType);
+
+        demandToUpdate.setAmount(demand.getAmount());
+        demandToUpdate.setDescription(demand.getDescription());
+        demandToUpdate.setProductLength(demand.getProductLength());
+        demandToUpdate.setProductHeight(demand.getProductHeight());
+        demandToUpdate.setMeterValue(demand.getMeterValue());
+        demandToUpdate.setValue(demand.getValue());
+
+        return demandRepository.save(demandToUpdate);
     }
 }

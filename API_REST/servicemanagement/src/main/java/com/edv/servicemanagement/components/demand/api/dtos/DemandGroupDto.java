@@ -1,5 +1,6 @@
 package com.edv.servicemanagement.components.demand.api.dtos;
 
+import com.edv.servicemanagement.components.customer.api.dtos.CustomerDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,11 +14,13 @@ public class DemandGroupDto {
 
     private Long id;
 
-    private String customerName;
+    private CustomerDto customer;
 
     private LocalDateTime created;
 
     private BigDecimal value;
+
+    private BigDecimal reducedValue;
 
     private List<DemandDto> demands;
 

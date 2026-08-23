@@ -16,10 +16,10 @@ export default function SignUp() {
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              {signup.title}
+              Crie sua conta
             </h1>
             <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-              {signup.description}
+              Junta-se a plataforma e gerencie os pagamentos de seus clientes
             </p>
           </div>
           <SignUpForm />

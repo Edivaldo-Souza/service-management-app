@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.edv.servicemanagement.commons.ResponseConstants;
 
 @RestController
@@ -36,6 +33,20 @@ public class AuthenticationController {
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
 
+    }
+
+    @PostMapping("/logout")
+    private ResponseEntity<Void> signOut (HttpServletRequest request,
+                                          @CookieValue("accessToken") String token){
+
+        ResponseCookie responseCookie = ResponseCookie.from("accessToken",token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
     }
 
 }

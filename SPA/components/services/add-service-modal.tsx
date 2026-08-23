@@ -13,12 +13,14 @@ interface AddServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   customer?: CustomerDto | null;
+  onServiceCreated?: () => void;
 }
 
 interface ServiceData{
   demandGroupId:number,
   customerId?: number
-  productTypeId?: number
+  productTypeId?: number,
+  meterValue: number,
   description:string,
   amount: number
   productLength: number
@@ -26,11 +28,12 @@ interface ServiceData{
   value: number
 }
 
-export default function AddServiceModal({isOpen,onClose, customer}:AddServiceModalProps){
+export default function AddServiceModal({isOpen,onClose, customer, onServiceCreated}:AddServiceModalProps){
   const [serviceData,setServiceData] = useState<ServiceData>({
     demandGroupId:0,
     customerId:0,
     productTypeId: 0,
+    meterValue: 0,
     description:"",
     amount: 0,
     productLength: 0,
@@ -48,17 +51,32 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
     }))
   }
 
-  const totalValue = productType ?
+  /*const totalValue: number = productType ?
     (serviceData.amount || 0) * 
     (serviceData.productLength || 0) * 
     (serviceData.productHeight || 0) *
     (Number(productType.label.match(/[\d.]+/))) || 0 : 0
+  */
+ 
+    const totalValue: number = 
+    !serviceData.meterValue || serviceData.meterValue <=0 ?
+      productType ?
+        (serviceData.amount || 0) * 
+        (serviceData.productLength || 0) * 
+        (serviceData.productHeight || 0) *
+        (Number(productType.label.match(/[\d.]+/))) || 0 : 0
+      : 
+      (serviceData.amount || 0) * 
+        (serviceData.productLength || 0) * 
+        (serviceData.productHeight || 0) *
+        (serviceData.meterValue || 0)
 
   const clearServiceData = () =>{
     setServiceData({
       demandGroupId:0,
       customerId:0,
       productTypeId: 0,
+      meterValue: 0,
       description:"",
       amount: 0,
       productLength: 0,
@@ -91,6 +109,7 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
         const response = await api.post("v1/demand",postPayload)
         if(response.status === 201){
           toast.success("Serviço adicionado")
+          onServiceCreated?.();
         }
 
         clearServiceData();
@@ -113,7 +132,7 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-opacity">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+      <div className="w-full max-w-4xl rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">{"Novo Serviço de "+ customer?.name}</h2>
           <button 
@@ -132,9 +151,12 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
         </div>
         
         <form 
-          className="space-y-5" 
+          className="flex flex-col md:flex-row gap-8" 
           onSubmit={handleSubmit}
         >
+
+          {/* Right section: Inputs */}
+          <div className="flex-1 space-y-5">
           <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-700 block" htmlFor="description">
               Descrição
@@ -176,6 +198,21 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
           </div>
 
           <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 block" htmlFor="meterValue">
+              Valor do m²
+            </label>
+            <input
+              id="meterValue"
+              name="meterValue"
+              type="number"
+              step="any"
+              onChange={handleChange}
+              placeholder="0.0m"
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-gray-700 placeholder:text-gray-400"
+            />
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-700 block" htmlFor="productLength">
               Largura do material
             </label>
@@ -204,12 +241,9 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
               className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-gray-700 placeholder:text-gray-400"
             />
           </div>
-          
-          <div className="text-gray-800">
-            <h3>Valor total</h3>
-            <h1>{totalValue}</h1>
-          </div>
 
+          
+          
           <div className="pt-2 flex gap-3">
             <button
               type="button"
@@ -228,6 +262,24 @@ export default function AddServiceModal({isOpen,onClose, customer}:AddServiceMod
             >
               {loading ? "Carregando..." : "Salvar"}
             </button>
+
+            
+          </div>
+          </div>
+
+           {/* Left section: Total value */}
+          <div className="w-full md:w-2/5 bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-8 rounded-2xl border border-emerald-100 flex flex-col justify-center items-center shadow-inner relative overflow-hidden">
+            <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-200/40 rounded-full blur-2xl"></div>
+            <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-emerald-300/30 rounded-full blur-2xl"></div>
+            
+            <h3 className="text-emerald-800 font-bold mb-4 text-sm uppercase tracking-widest relative z-10">Valor Total</h3>
+            <div className="flex items-baseline gap-1 relative z-10">
+              <span className="text-xl font-semibold text-emerald-700">R$</span>
+              <h1 className="text-5xl font-black text-emerald-600 tracking-tight">{totalValue.toFixed(2)}</h1>
+            </div>
+            <p className="text-emerald-700/60 text-xs mt-6 text-center font-medium max-w-[200px] relative z-10">
+              Valor calculado com base nas medidas e quantidade informadas
+            </p>
           </div>
         </form>
       </div>

@@ -1,6 +1,7 @@
 package com.edv.servicemanagement.components.user.domain.entities;
 
 import com.edv.servicemanagement.components.customer.domain.entities.Customer;
+import com.edv.servicemanagement.components.files.domain.entities.File;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +24,9 @@ public class User implements UserDetails {
     private String password;
 
     private String email;
+
+    @OneToOne(mappedBy = "user")
+    private File file;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -19,3 +19,6 @@ api:
       secret: ${APIKEY}
     cors:
       allowed-origin: ${FRONTEND}
+
+file:
+  upload-dir: ./uploads

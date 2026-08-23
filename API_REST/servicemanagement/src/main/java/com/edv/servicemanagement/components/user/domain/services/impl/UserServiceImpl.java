@@ -1,29 +1,30 @@
-package com.edv.servicemanagement.components.user.domain.services;
+package com.edv.servicemanagement.components.user.domain.services.impl;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.edv.servicemanagement.commons.ValidationField;
 import com.edv.servicemanagement.commons.exceptions.ResourceNotFoundException;
 import com.edv.servicemanagement.commons.exceptions.UniqueFieldValueAlreadyExistsException;
 import com.edv.servicemanagement.components.authentication.services.TokenService;
+import com.edv.servicemanagement.components.files.domain.services.impl.FileServiceImpl;
 import com.edv.servicemanagement.components.user.domain.entities.User;
 import com.edv.servicemanagement.components.user.domain.repositories.UserRepository;
+import com.edv.servicemanagement.components.user.domain.services.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
-
+    private final FileServiceImpl fileService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -64,7 +65,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User create(User user) {
+    @Transactional
+    public User create(User user, MultipartFile file) {
 
         validateFields(user);
 
@@ -72,18 +74,33 @@ public class UserServiceImpl implements UserService{
 
         user.setPassword(passwordEncoded);
 
-        return userRepository.save(user);
+        User newUser =  userRepository.save(user);
+
+        fileService.create(newUser,file);
+
+        return newUser;
     }
 
     @Override
-    public User update(User user) {
+    @Transactional
+    public User update(User user, MultipartFile file) {
 
         validateFields(user);
 
         User currentUser = getById(user.getId());
 
-        if(user.getPassword()==null){
+        if(user.getPassword()==null || user.getPassword().isBlank()){
             user.setPassword(currentUser.getPassword());
+        }
+        else{
+            String passwordEncoded = passwordEncoder.encode(user.getPassword());
+
+            user.setPassword(passwordEncoded);
+        }
+
+        if(file!=null){
+            fileService.delete(currentUser.getFile().getId());
+            fileService.create(user,file);
         }
 
         return userRepository.save(user);

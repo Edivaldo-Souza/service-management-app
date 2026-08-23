@@ -1,0 +1,1 @@
+ALTER TABLE tb_demand ADD COLUMN meter_value DOUBLE PRECISION;

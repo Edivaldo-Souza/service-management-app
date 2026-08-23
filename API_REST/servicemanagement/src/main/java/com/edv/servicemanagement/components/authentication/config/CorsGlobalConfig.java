@@ -16,6 +16,7 @@ public class CorsGlobalConfig {
         public void addCorsMappings(CorsRegistry corsRegistry){
             corsRegistry.addMapping("/**")
                     .allowedHeaders("*")
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedOriginPatterns(allowedOrigin)
                     .allowCredentials(true);
         }

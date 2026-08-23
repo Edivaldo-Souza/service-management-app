@@ -16,6 +16,8 @@ public class CreateDemandDto {
 
     private Long productTypeId;
 
+    private BigDecimal meterValue;
+
     private String description;
 
     private Integer amount;

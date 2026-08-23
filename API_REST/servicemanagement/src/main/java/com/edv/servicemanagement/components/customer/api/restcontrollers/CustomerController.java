@@ -1,6 +1,5 @@
 package com.edv.servicemanagement.components.customer.api.restcontrollers;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.edv.servicemanagement.commons.ApiResponse;
 import com.edv.servicemanagement.commons.ResponseUtil;
 import com.edv.servicemanagement.components.authentication.services.TokenService;
@@ -11,8 +10,7 @@ import com.edv.servicemanagement.components.customer.api.mappers.CustomerMapper;
 import com.edv.servicemanagement.components.customer.domain.entities.Customer;
 import com.edv.servicemanagement.components.customer.domain.services.CustomerServiceImpl;
 import com.edv.servicemanagement.components.user.domain.entities.User;
-import com.edv.servicemanagement.components.user.domain.services.UserService;
-import com.edv.servicemanagement.components.user.domain.services.UserServiceImpl;
+import com.edv.servicemanagement.components.user.domain.services.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

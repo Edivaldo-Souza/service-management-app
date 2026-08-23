@@ -1,0 +1,1 @@
+ALTER TABLE tb_demand_group ADD COLUMN reduced_value DOUBLE PRECISION;

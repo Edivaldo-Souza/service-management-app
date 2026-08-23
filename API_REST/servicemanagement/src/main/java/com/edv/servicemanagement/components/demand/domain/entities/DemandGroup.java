@@ -25,7 +25,7 @@ public class DemandGroup {
     @OneToMany(mappedBy = "demandGroup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Demand> demands;
 
-    private BigDecimal value;
+    private BigDecimal reducedValue;
 
     @CreatedDate
     @Column(updatable = false)

@@ -10,7 +10,7 @@ import com.edv.servicemanagement.components.user.api.dtos.UpdateUserDto;
 import com.edv.servicemanagement.components.user.api.dtos.UserDto;
 import com.edv.servicemanagement.components.user.api.mappers.UserMapper;
 import com.edv.servicemanagement.components.user.domain.entities.User;
-import com.edv.servicemanagement.components.user.domain.services.UserServiceImpl;
+import com.edv.servicemanagement.components.user.domain.services.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -30,12 +33,31 @@ public class UserController {
     private final UserServiceImpl userService;
     private final TokenService tokenService;
 
-    @PostMapping
-    private ResponseEntity<ApiResponse<UserDto>> createUser(HttpServletRequest request, @RequestBody CreateUserDto dto){
+    @GetMapping
+    private ResponseEntity<ApiResponse<UserDto>> getUser (
+            HttpServletRequest request,
+            @CookieValue("accessToken") String token
+    ){
+        User currentUser = userService.getByToken(token);
+        UserDto userDto = userMapper.UserToUserDto(currentUser);
+
+        ApiResponse<UserDto> response = ResponseUtil.success(userDto,"User found",request.getRequestURI());
+
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @PostMapping(consumes = {"multipart/form-data"})
+    private ResponseEntity<ApiResponse<UserDto>> createUser(
+            HttpServletRequest request,
+            MultipartHttpServletRequest multipartRequest,
+            @RequestPart("data") CreateUserDto dto
+            ){
+
+        MultipartFile file = multipartRequest.getFile("invoice");
 
         User user = userMapper.createUserDtoToUser(dto);
 
-        User newUser = userService.create(user);
+        User newUser = userService.create(user,file);
 
         UserDto newUserDto = userMapper.UserToUserDto(newUser);
 
@@ -44,8 +66,11 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping
-    private ResponseEntity<ApiResponse<UserDto>> updateUser(HttpServletRequest request, @RequestBody UpdateUserDto dto){
+    @PutMapping(consumes = {"multipart/form-data"})
+    private ResponseEntity<ApiResponse<UserDto>> updateUser(
+            HttpServletRequest request,
+            MultipartHttpServletRequest multipartRequest,
+            @RequestPart("data") UpdateUserDto dto){
 
         String currentEmail = userService.getById(dto.getId()).getEmail();
 
@@ -62,7 +87,7 @@ public class UserController {
 
         User user = userMapper.updateUserDtoToUser(dto);
 
-        User updatedUser = userService.update(user);
+        User updatedUser = userService.update(user,multipartRequest.getFile("invoice"));
 
         UserDto updatedUserDto = userMapper.UserToUserDto(updatedUser);
 
@@ -70,13 +95,15 @@ public class UserController {
 
         if(!updatedUserDto.getEmail().equals(currentEmail)){
 
+            int maxAge = 7 * 24 * 60 * 60;
+
             String newToken = tokenService.generateToken(updatedUserDto.getEmail());
 
             ResponseCookie responseCookie = ResponseCookie.from("accessToken",newToken)
                     .httpOnly(true)
                     .secure(true)
                     .path("/")
-                    .maxAge(ResponseConstants.TOKEN_MAX_AGE.ordinal())
+                    .maxAge(maxAge)
                     .build();
 
             responseBuilder.header(HttpHeaders.SET_COOKIE,responseCookie.toString());

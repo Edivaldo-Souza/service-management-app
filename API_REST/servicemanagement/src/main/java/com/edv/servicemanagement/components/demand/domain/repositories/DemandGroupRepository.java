@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface DemandGroupRepository extends JpaRepository<DemandGroup,Long> {
     Optional<DemandGroup> findFirstByCustomerIdAndClosedIsNullOrderByCreated(Long customerId);
-    List<DemandGroup> findAllByClosedIsNull();
+    List<DemandGroup> findAllByClosedIsNullAndCustomerUserId(Long userId);
 }

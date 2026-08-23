@@ -1,6 +1,9 @@
+import CustomerDto from "./customer-dto";
+
 export default interface DemandGroupDto {
-  id: number;
-  customerName: string;
-  value: number;
-  created: string;
+  id: number,
+  customer: CustomerDto,
+  value: number,
+  reducedValue: number,
+  created: string,
 }
