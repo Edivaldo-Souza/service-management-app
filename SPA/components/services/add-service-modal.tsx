@@ -117,7 +117,8 @@ export default function AddServiceModal({isOpen,onClose, customer, onServiceCrea
       }
       catch(error){
         if(axios.isAxiosError(error)){
-          toast.error(`${error.response?.data.error}`)
+          const errorResponse = error.response
+          toast.error(`${errorResponse?.data.error}`)
         }
         console.log(error)
       }

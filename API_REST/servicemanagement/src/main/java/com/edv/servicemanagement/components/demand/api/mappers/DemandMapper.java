@@ -50,7 +50,9 @@ public class DemandMapper {
         DemandDto demandDto = new DemandDto();
 
         demandDto.setId(demand.getId());
-        demandDto.setProductTypeDto(productTypeMapper.productTypeToProductTypeDto(demand.getProductType()));
+        if(demand.getProductType()!=null){
+            demandDto.setProductTypeDto(productTypeMapper.productTypeToProductTypeDto(demand.getProductType()));
+        }
         demandDto.setMeterValue(demand.getMeterValue());
         demandDto.setDescription(demand.getDescription());
         demandDto.setAmount(demand.getAmount());

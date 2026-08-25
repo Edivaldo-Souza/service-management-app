@@ -5,6 +5,7 @@ import api from "@/lib/api"
 import axios from "axios"
 import toast from "react-hot-toast"
 import { signin } from "@/lib/site"
+import { useRouter } from "next/navigation"
 
 const inputClassName =
   "w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 dark:border-zinc-800 dark:bg-zinc-950";
@@ -46,6 +47,8 @@ export default function SignInForm(){
   const [loading,setLoading] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
+  const router = useRouter();
+
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
       const {name, value} = e.target
       setloginFormData((prev)=>({
@@ -61,7 +64,7 @@ export default function SignInForm(){
       try{
         const response = await api.post("/v1/auth",loginFormData)
         if(response.status === 200){
-          toast.success("User authenticated")
+          toast.success("Usuário autenticado")
         }
         setloginFormData({email:'', password:''})
 
@@ -121,7 +124,14 @@ export default function SignInForm(){
                 >
                   {loading ? 'Carregando...' : "Entrar"}
                 </button>
+
               </form>
+              <button
+                  onClick={()=>{router.back()}}
+                  className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full border border-zinc-200 bg-white px-8 text-sm font-medium text-foreground transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+                >
+                  Voltar
+              </button>
             </div>
     )
 }

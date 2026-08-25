@@ -77,6 +77,7 @@ public class InvoiceServiceImpl {
             double unitValue = demand.getValue().doubleValue() / demand.getAmount();
             demand.setUnitValue(new BigDecimal(unitValue));
             demand.setUnitValue(demand.getUnitValue().setScale(2,RoundingMode.HALF_UP));
+            demand.setValue(demand.getValue().setScale(2,RoundingMode.HALF_UP));
         });
 
         demandGroup.getDemands().forEach(demand -> {

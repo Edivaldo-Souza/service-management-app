@@ -99,7 +99,9 @@ public class UserServiceImpl implements UserService {
         }
 
         if(file!=null){
-            fileService.delete(currentUser.getFile().getId());
+            if(currentUser.getFile()!=null) {
+                fileService.delete(currentUser.getFile().getId());
+            }
             fileService.create(user,file);
         }
 

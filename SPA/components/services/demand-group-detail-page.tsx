@@ -86,8 +86,9 @@ export default function DemandGroupDetailPage({
   const startEditing = (demand: Demand) => {
     setEditingId(demand.id);
     setProductType({
-      label: `${demand.productTypeDto.name} (R$ ${demand.productTypeDto.price})`,
-      value: demand.productTypeDto.id,
+      label: demand.productTypeDto ? `${demand.productTypeDto?.name} (R$ ${demand.productTypeDto?.price})`
+              : "Não especificado",
+      value: demand.productTypeDto?.id,
     });
     setEditData({
       id:demand.id,
@@ -170,6 +171,18 @@ export default function DemandGroupDetailPage({
       }
     } finally {
       setSaving(false);
+    }
+  };
+
+  const deleteDemand = async (demandId: number) => {
+    try {
+      await api.delete(`v1/demand/${demandId}`);
+      toast.success("Serviço removido");
+      fetchDemandGroup();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(`${error.response?.data.error}`);
+      }
     }
   };
 
@@ -459,7 +472,8 @@ export default function DemandGroupDetailPage({
                         <span>
                           Material:{" "}
                           <span className="font-medium text-gray-700">
-                            {`${demand.productTypeDto.name} (R$ ${demand.productTypeDto.price})`}
+                            {demand.productTypeDto && !demand.meterValue ? `${demand.productTypeDto.name} (R$ ${demand.productTypeDto.price})`
+                            : "Não especificado"}
                           </span>
                         </span>
                         <span>
@@ -510,6 +524,35 @@ export default function DemandGroupDetailPage({
                           <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg>
                       </button>
+                      {demands.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteDemand(demand.id);
+                          }}
+                          className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                          aria-label="Remover serviço"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            viewBox="0 0 24 24"
+                          >
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                            <path d="M10 11v6" />
+                            <path d="M14 11v6" />
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-4 text-xs text-gray-400 border-t border-gray-100 pt-2">

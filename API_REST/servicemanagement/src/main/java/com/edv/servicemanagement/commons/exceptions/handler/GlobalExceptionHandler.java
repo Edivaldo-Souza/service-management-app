@@ -2,6 +2,7 @@ package com.edv.servicemanagement.commons.exceptions.handler;
 
 import com.edv.servicemanagement.commons.ApiResponse;
 import com.edv.servicemanagement.commons.ResponseUtil;
+import com.edv.servicemanagement.commons.exceptions.DomainException;
 import com.edv.servicemanagement.commons.exceptions.ResourceNotFoundException;
 import com.edv.servicemanagement.commons.exceptions.UniqueFieldValueAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDomainException(
+            HttpServletRequest request, Exception exception
+    ){
+        ApiResponse<Void> response = ResponseUtil.error(exception.getMessage(),
+                null, request.getRequestURI());
+        return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(UniqueFieldValueAlreadyExistsException.class)
     public ResponseEntity<ApiResponse<Void>> handleUniqueFieldValueAlreadyExistsException(

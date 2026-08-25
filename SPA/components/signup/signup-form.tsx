@@ -204,6 +204,12 @@ export function SignUpForm() {
           {loading ? 'Carregando...' : 'Criar conta'}
         </button>
       </form>
+      <button
+        onClick={()=>{router.back()}}
+        className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full border border-zinc-200 bg-white px-8 text-sm font-medium text-foreground transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+        >
+          Voltar
+      </button>
       <p className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
         {"Já possui uma conta?"}{" "}
         <Link href="/signin"  className="font-medium text-accent">{"Entrar"}</Link>

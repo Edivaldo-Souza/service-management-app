@@ -1,5 +1,6 @@
 package com.edv.servicemanagement.components.demand.domain.services.impl;
 
+import com.edv.servicemanagement.commons.exceptions.DomainException;
 import com.edv.servicemanagement.commons.exceptions.ResourceNotFoundException;
 import com.edv.servicemanagement.components.customer.domain.entities.Customer;
 import com.edv.servicemanagement.components.customer.domain.services.CustomerServiceImpl;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -40,11 +42,15 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public Demand create(Demand demand, Long customerId, Long productTypeId) {
+    public Demand create(Demand demand, Long customerId, Long productTypeId){
+
+        validateValues(demand,productTypeId);
 
         DemandGroup demandGroup = demandGroupService.getByCustomerId(customerId);
 
-        demand.setProductType(productTypeService.getById(productTypeId));
+        if(productTypeId != null && (demand.getMeterValue()==null || demand.getMeterValue().doubleValue()==0D)){
+            demand.setProductType(productTypeService.getById(productTypeId));
+        }
 
         if(demandGroup != null){
 
@@ -77,22 +83,43 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     @Transactional
-    public Demand update(Demand demand, Long productTypeId) {
+    public Demand update(Demand demand, Long productTypeId){
+
+        validateValues(demand,productTypeId);
 
         Demand demandToUpdate = getById(demand.getId());
 
-        ProductType productType = productTypeService.getById(productTypeId);
+        if(productTypeId!=null && (demand.getMeterValue()==null || demand.getMeterValue().doubleValue()==0D)){
+            ProductType productType = productTypeService.getById(productTypeId);
+            demandToUpdate.setProductType(productType);
+        }
+
+        if(demand.getMeterValue()!=null && demand.getMeterValue().doubleValue()!=0D){
+            demandToUpdate.setProductType(null);
+        }
 
         demandToUpdate.setUpdated(LocalDateTime.now());
-        demandToUpdate.setProductType(productType);
 
         demandToUpdate.setAmount(demand.getAmount());
         demandToUpdate.setDescription(demand.getDescription());
         demandToUpdate.setProductLength(demand.getProductLength());
         demandToUpdate.setProductHeight(demand.getProductHeight());
         demandToUpdate.setMeterValue(demand.getMeterValue());
-        demandToUpdate.setValue(demand.getValue());
 
         return demandRepository.save(demandToUpdate);
+    }
+
+    @Override
+    @Transactional
+    public boolean delete(Long id){
+        Demand demand = getById(id);
+        demandRepository.delete(demand);
+        return true;
+    }
+
+    private void validateValues(Demand demand, Long productTypeId){
+        if(productTypeId==null && (demand.getMeterValue()==null || demand.getMeterValue().doubleValue()==0D)){
+            throw new DomainException("O valor do metro quadrado precisa ser informado");
+        }
     }
 }

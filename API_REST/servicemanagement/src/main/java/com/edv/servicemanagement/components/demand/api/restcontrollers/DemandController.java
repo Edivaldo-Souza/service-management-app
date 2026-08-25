@@ -53,4 +53,11 @@ public class DemandController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+
+    @DeleteMapping("{id}")
+    private ResponseEntity<ApiResponse<Void>> delete(HttpServletRequest request, @PathVariable Long id){
+        demandService.delete(id);
+        ApiResponse<Void> response = ResponseUtil.success(null,"Demand deleted",request.getRequestURI());
+        return new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
+    }
 }

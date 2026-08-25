@@ -54,7 +54,6 @@ export default function SingleSelectInput({value,onChange,url,typeMetaData}:Sing
             isLoading={loading}
             value={value}
             onChange={onChange}
-            required
             placeholder={`Selecione a ${typeMetaData}`}
             noOptionsMessage={()=>(`Nenhuma ${typeMetaData} encontrada`)}
             loadingMessage={()=>(`Carregando ${typeMetaData}...`)}
